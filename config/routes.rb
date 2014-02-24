@@ -1,5 +1,6 @@
 MedicalVis::Application.routes.draw do
   root :to => 'diseases#index'
+  get 'sample' => 'diseases#sample'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

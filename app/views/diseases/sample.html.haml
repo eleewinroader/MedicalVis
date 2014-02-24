@@ -1,0 +1,6 @@
+#samplePage
+  %h1 脳梗塞の病院別手術件数および在院日数
+  %p#chart
+%script{src: "http://d3js.org/d3.v3.min.js"}
+= javascript_tag do
+  = render 'motion_chart.js'
