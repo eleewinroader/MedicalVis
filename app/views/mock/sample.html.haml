@@ -1,0 +1,9 @@
+.motion-chart
+  %h1 脳梗塞の病院別患者数および平均在院日数
+  = link_to 'トップ', root_path
+  %p#chart
+  %p{style: 'color: #ff7f0e; width: 1000px; text-align: center;'}
+    ● 福岡大学病院
+%script{src: "http://d3js.org/d3.v3.min.js"}
+= javascript_tag do
+  = render 'sample.js'

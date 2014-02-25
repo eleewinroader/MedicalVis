@@ -2,9 +2,21 @@
 function x(d) { return d.hospital_days; }
 function y(d) { return d.patient_count; }
 //function radius(d) { return d.population; }
-function radius(d) { return 10000000; }
+function radius(d) {
+  if (d.id == 67) {
+    return 50000000; 
+  } else {
+    return 10000000;
+  }
+}
 //function color(d) { return d.region; }
-function color(d) { return "hhh"; }
+function color(d) {
+  if (d.id == 67) {
+    return 1; 
+  } else {
+    return 0;
+  }
+}
 function key(d) { return d.name; }
 
 // Chart dimensions.
@@ -14,9 +26,9 @@ var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
 
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 50]).range([0, width]),
-    yScale = d3.scale.linear().domain([0, 800]).range([height, 0]),
+    yScale = d3.scale.linear().domain([0, 1000]).range([height, 0]),
     radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
-    colorScale = d3.scale.category10();
+    colorScale = d3.scale.category10().range();
 
 
 // The x & y axes.
@@ -64,7 +76,7 @@ var label = svg.append("text")
     .attr("text-anchor", "end")
     .attr("y", height - 24)
     .attr("x", width)
-    .text(2008);
+    .text(2007);
 
 // Load the data.
 d3.json("json/hospitals.json", function(nations) {
@@ -76,12 +88,12 @@ d3.json("json/hospitals.json", function(nations) {
   var dot = svg.append("g")
       .attr("class", "dots")
       .selectAll(".dot")
-      .data(interpolateData(2008))
+      .data(interpolateData(2007))
       .enter().append("circle")
       .attr("class", "dot")
-      .style("fill", function(d) { return colorScale(color(d)); })
+      .style("fill", function(d) { return colorScale[color(d)]; })
       .call(position)
-      .sort(order);
+      .sort(reverse_order);
 
   // Add a title.
   dot.append("title")
@@ -112,15 +124,19 @@ d3.json("json/hospitals.json", function(nations) {
         .attr("r", function(d) { return radiusScale(radius(d)); });
   }
 
-  // Defines a sort order so that the smallest dots are drawn on top.
+  // Defines a sort reverse_order so that the smallest dots are drawn on top.
   function order(a, b) {
     return radius(b) - radius(a);
+  }
+
+  function reverse_order(a, b) {
+    return radius(a) - radius(b);
   }
 
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2008, 2013])
+        .domain([2007, 2012])
         .range([box.x + 10, box.x + box.width - 10])
         .clamp(true);
 
@@ -155,7 +171,7 @@ d3.json("json/hospitals.json", function(nations) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-    dot.data(interpolateData(year), key).call(position).sort(order);
+    dot.data(interpolateData(year), key).call(position).sort(reverse_order);
     label.text(Math.round(year));
   }
 
@@ -163,6 +179,7 @@ d3.json("json/hospitals.json", function(nations) {
   function interpolateData(year) {
     return nations.map(function(d) {
       return {
+        id: d.id,
         name: d.name,
         region: d.region,
         hospital_days: interpolateValues(d.hospital_days, year),

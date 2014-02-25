@@ -1,7 +1,10 @@
 class MockController < ApplicationController
-  def index
+  def top
   end
 
   def sample
+  end
+
+  def sample2
   end
 end
