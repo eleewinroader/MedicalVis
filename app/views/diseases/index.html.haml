@@ -1,0 +1,8 @@
+%h1 アプリサンプル
+%p
+  = link_to 'トップ', root_path
+  %span >
+  %span アプリトップ
+%h2 1.疾病を選ぶ
+= select_tag :disease, options_from_collection_for_select(Disease.all, "id", "name")
+= button_to '次へ', disease_path(1), method: :get

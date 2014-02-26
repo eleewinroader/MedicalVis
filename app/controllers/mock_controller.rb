@@ -7,4 +7,13 @@ class MockController < ApplicationController
 
   def sample2
   end
+
+  def app
+  end
+
+  def prefecture
+  end
+
+  def hospital
+  end
 end

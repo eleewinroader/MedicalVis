@@ -1,0 +1,14 @@
+%h1 アプリサンプル
+%p
+  = link_to 'トップ', root_path
+  %span >
+  = link_to 'アプリトップ', diseases_path
+  %span >
+  %span= link_to @disease.name, disease_path(@disease)
+  %span >
+  %span= @prefecture.name
+%h2 3.病院を探す
+%h3 地図
+%h3 グラフ
+%h3 平均在院日数ランキング(2012年度)
+= @hospitals.count
