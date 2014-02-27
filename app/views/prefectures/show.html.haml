@@ -9,6 +9,86 @@
   %span= @prefecture.name
 %h2 3.病院を探す
 %h3 地図
+%div#map_canvas{style: "width:900px; height:900px;"}
 %h3 グラフ
-%h3 平均在院日数ランキング(2012年度)
-= @hospitals.count
+.motion-chart
+  %p#chart
+%p{style: 'width: 1000px; text-align: center;'}
+  %span{style: 'color: #ff7f0e;'}= "● #{@prefecture.name}の病院" 
+  %span{style: 'color: #ccc;'} ● その他全国の病院
+%h3 DPCデータ
+※ 順位は2012年度平均在院日数
+- years = (2007..2012).to_a.sort.reverse
+%table{border: '1px'}
+  %tr
+    %th{rowspan: 2} 順位
+    %th{rowspan: 2} 病院名
+    - years.each do |year|
+      %th{colspan: 2}= "#{year}年度"
+  %tr
+    - 6.times do
+      %th 平均在院日数
+      %th 患者数
+
+  - @hospitals.each_with_index do |hospital,i|
+    %tr
+      %td= i+1
+      %td= link_to hospital.name, disease_hospital_path(@disease.id, hospital.id)
+      - dpcs = hospital.dpcs
+      - years.each do |year|
+        - dpc = dpcs.where(year: year).first
+        %td= dpc.hospital_days
+        %td= dpc.patient_count
+
+%script{src: "/js/d3.v3.min.js"}
+= javascript_tag do
+  = render 'prefecture.js'
+
+:coffeescript
+  $ ->
+    $('.touchable').tooltip()
+    $('.touchable').click ->
+      hospital_id = $(this).attr('id')
+      href = '/diseases/1/hospitals/' + hospital_id
+      window.location = href
+
+%script{src: "https://maps.googleapis.com/maps/api/js?sensor=false"}
+:coffeescript
+  setInfoWindow = (marker, content) ->
+    google.maps.event.addListener marker, "click", (event) ->
+      new google.maps.InfoWindow(content: content).open marker.getMap(), marker
+      return
+    return
+
+  initialize = ->
+    prefecture_id = #{@prefecture.id}
+
+    if prefecture_id == 47
+      console.log 'yey'
+      centerLatitude = 26.5
+      centerLongitude = 128
+    else
+      centerLatitude = #{@hospitals.average(:latitude)}
+      centerLongitude = #{@hospitals.average(:longitude)}
+
+    mapOptions =
+      center: new google.maps.LatLng(centerLatitude,centerLongitude)
+      zoom: #{@prefecture.zoom_level}
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions)
+    
+    hospitals = JSON.parse('#{@hospitals.map{|h| [h.id, h.name,h.latitude,h.longitude]}.to_json}')
+    
+    for hospital in hospitals
+      marker = new google.maps.Marker(
+        position: new google.maps.LatLng(hospital[2], hospital[3])
+        title: hospital[1]
+      )
+      marker.setMap(map)
+      content = "<a href=/diseases/#{@disease.id}" + "/hospitals/" + hospital[0] + ">" + hospital[1] + "</a>"
+      setInfoWindow(marker, content);
+    return
+  
+  $(document).ready ->
+    initialize()

@@ -11,6 +11,10 @@
     stroke: #000;
   }
 
+  .touchable {
+    cursor: hand;
+  }
+
   .axis path, .axis line {
     fill: none;
     stroke: #000;

@@ -20,7 +20,9 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'haml-rails'
+
 
 group :production do
   gem 'rails_12factor'

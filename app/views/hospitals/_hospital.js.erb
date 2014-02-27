@@ -1,11 +1,21 @@
+var hospital_id = <%= @hospital.id %>;
+
 function x(d) { return d.hospital_days; }
 function y(d) { return d.patient_count; }
 //function radius(d) { return d.population; }
 function radius(d) {
-  return 10000000;
+  if (d.id == hospital_id) {
+    return 50000000;
+  } else {
+    return 10000000;
+  }
 }
 function color(d) {
-  return d.region_id;
+  if (d.id == hospital_id) {
+    return '#ff7f0e';
+  } else {
+    return '#eee';
+  }
 }
 function key(d) { return d.name; }
 
@@ -15,8 +25,8 @@ var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
 
 var xScale = d3.scale.linear().domain([0, 50]).range([0, width]),
     yScale = d3.scale.linear().domain([0, 1000]).range([height, 0]),
-    radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
-    colorScale = d3.scale.category10().range();
+    radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]);
+    //colorScale = d3.scale.category10().range();
 
 var xAxis = d3.svg.axis().scale(xScale).orient("bottom"),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -68,7 +78,10 @@ d3.json("/json/hospitals.json", function(nations) {
       .data(interpolateData(2007))
       .enter().append("circle")
       .attr("class", "dot")
-      .style("fill", function(d) { return colorScale[color(d)]; })
+      .style("fill", function(d) { 
+        //return colorScale[color(d)]; 
+        return color(d);
+      })
       .call(position)
       .sort(reverse_order);
 
@@ -147,6 +160,7 @@ d3.json("/json/hospitals.json", function(nations) {
       return {
         id: d.id,
         region_id: d.region_id,
+        prefecture_id: d.prefecture_id,
         name: d.name,
         hospital_days: interpolateValues(d.hospital_days, year),
         patient_count: interpolateValues(d.patient_count, year)

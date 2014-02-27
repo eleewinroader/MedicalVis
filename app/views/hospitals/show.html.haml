@@ -1,0 +1,98 @@
+%h1 アプリサンプル
+%p
+  = link_to 'トップ', root_path
+  %span >
+  = link_to 'アプリトップ', diseases_path
+  %span >
+  %span= link_to @disease.name, disease_path(@disease)
+  %span >
+  %span= link_to @prefecture.name, disease_prefecture_path(@disease,@prefecture)
+  %span >
+  %span= @hospital.name
+%h2 4.入院プラン レポート
+%h3 レポート
+%table{border: '1px'}
+  - dpc = @hospital.dpcs.where(:year => 2012).first
+  %tr
+    %td 病名
+    %td= @disease.name
+  %tr
+    %td 病院
+    %td= @hospital.name
+  %tr
+    %td 住所
+    %td= "〒#{@hospital.postcode} #{@prefecture.name} #{@hospital.address}"
+  %tr
+    %td 電話番号
+    %td ※ 取得していません
+  %tr
+    %td 平均在院日数
+    %td
+      = "#{dpc.hospital_days} 日"
+      %br
+      ※ 2012年度の平均在院日数
+  %tr
+    %td 実績
+    %td
+      = "#{dpc.patient_count} 件/年間"
+      %br
+      ※ 2012年度の患者数
+%h3 順位
+※ 2012年度の平均在院日数
+%table{border: '1px'}
+  - ranking = @hospital.ranking(@disease.id,2012)
+  %tr
+    %td= "#{@prefecture.name}内"
+    %td= "#{ranking[:pref]}位 / #{@prefecture.hospitals.count}"
+  %tr
+    %td 全国
+    %td= "#{ranking[:all]}位 / #{Hospital.count}"
+
+%h3 地図
+%div#map_canvas{style: "width:400px; height:400px;"}
+%h3 グラフ
+.motion-chart
+  %p#chart
+
+%h3 チャート
+%script{src: "https://www.google.com/jsapi"}
+#chart_div{style: "width: 900px; height: 500px;"}
+:coffeescript
+  drawChart = ->
+    data = google.visualization.arrayToDataTable(JSON.parse('#{@chart_data.to_json}'))
+    options =
+      title: ""
+      series: [
+        {targetAxisIndex: 0}
+        {targetAxisIndex: 1}
+      ]
+    chart = new google.visualization.LineChart(document.getElementById("chart_div"))
+    chart.draw data, options
+    return
+  google.load "visualization", "1",
+    packages: ["corechart"]
+
+  google.setOnLoadCallback drawChart
+
+%script{src: "/js/d3.v3.min.js"}
+= javascript_tag do
+  = render 'hospital.js'
+
+%script{src: "https://maps.googleapis.com/maps/api/js?sensor=false"}
+:coffeescript
+  initialize = ->
+    latLng = new google.maps.LatLng(#{@hospital.latitude},#{@hospital.longitude})
+    mapOptions =
+      center: latLng
+      zoom: 11
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions)
+    marker = new google.maps.Marker(
+      position: latLng
+      title: "#{@hospital.name}"
+    )
+    marker.setMap(map)
+    return
+  
+  $ ->
+    initialize()
