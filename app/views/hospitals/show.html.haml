@@ -50,9 +50,13 @@
 
 %h3 地図
 %div#map_canvas{style: "width:400px; height:400px;"}
+
 %h3 グラフ
 .motion-chart
   %p#chart
+%p{style: 'width: 1000px; text-align: center;'}
+  %span{style: 'color: #ff7f0e;'}= "● #{@hospital.name}" 
+  %span{style: 'color: #ccc;'} ● その他全国の病院
 
 %h3 チャート
 %script{src: "https://www.google.com/jsapi"}
