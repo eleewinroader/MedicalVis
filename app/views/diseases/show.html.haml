@@ -1,0 +1,16 @@
+%h1 アプリサンプル
+%p
+  = link_to 'トップ', root_path
+  %span >
+  = link_to 'アプリトップ', diseases_path
+  %span >
+  %span= @disease.name
+%h2 2.地域を選ぶ
+= select_tag :prefecture, options_from_collection_for_select(Prefecture.all, "id", "name")
+= button_to '次へ', disease_prefecture_path(1,1), method: :get, form: {id: 'pref-select-form'}
+
+:coffeescript
+  $(document).on 'change','select#prefecture', ->
+    pref_id = $("select#prefecture option:selected").val()
+    $('#pref-select-form').attr('action',('/diseases/1/prefectures/' + pref_id))
+

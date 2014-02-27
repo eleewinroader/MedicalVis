@@ -2,6 +2,11 @@ MedicalVis::Application.routes.draw do
   root :to => 'mock#top'
   get 'sample' => 'mock#sample'
   get 'sample2' => 'mock#sample2'
+  resources :diseases, only: [:index, :show] do
+    resources :prefectures, only: [:show]
+    resources :hospitals, only: [:show]
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
