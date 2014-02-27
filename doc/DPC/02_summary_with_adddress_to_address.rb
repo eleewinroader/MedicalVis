@@ -24,11 +24,11 @@ end
 
 
 CSV.open("prefecture.csv","r") do |rows|
-  rows.each do |row|
+  rows.each_with_index do |row, i|
     region_id = row[3]
     region_name = row[4]
     name = row[0]
-    prefectures[name] = [region_id,region_name] 
+    prefectures[name] = [region_id,region_name, i+1] 
   end 
 end
 
@@ -38,7 +38,7 @@ CSV.open("address.csv","w") do |csv|
       pref_name = row[14]
       pref_name = change_pref(pref_name)
 
-			csv << [i+1,row[0],row[13],pref_name,row[15].gsub(/電話番号/,''),row[16],row[17], prefectures[pref_name][0], prefectures[pref_name][1]]
+			csv << [i+1,row[0],row[13],pref_name,row[15].gsub(/電話番号/,''),row[16],row[17], prefectures[pref_name][0], prefectures[pref_name][1],prefectures[pref_name][2]]
 	  end
 	end
 end

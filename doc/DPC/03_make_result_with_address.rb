@@ -22,6 +22,7 @@ CSV.open("address.csv","r") do |rows|
 		hospitals[row[0]] << row[6]
 		hospitals[row[0]] << row[7]
 		hospitals[row[0]] << row[8]
+		hospitals[row[0]] << row[9]
 	end
 end
 
